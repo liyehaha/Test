@@ -6,10 +6,11 @@ pipeline {
         parallel(
           "Test": {
             git(url: 'git@github.com:YunzhanghuOpen/geass.git', branch: 'issue#1071', changelog: true)
-            
-          },
-          "Build": {
-            sh 'printenv'
+            sh '''printenv
+
+export GIT_TAG=$(git tag | head -a 1)
+
+printenv'''
             
           },
           "Unitest": {
