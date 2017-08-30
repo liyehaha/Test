@@ -1,23 +1,37 @@
 pipeline {
   agent any
   stages {
-    stage('test') {
+    stage('Test') {
       steps {
-        catchError() {
-          node(label: 'aaa') {
-            waitUntil() {
-              sleep 1
-            }
+        parallel(
+          "Test": {
+            git(url: 'git@github.com:YunzhanghuOpen/geass.git', branch: 'issue#1071', changelog: true)
+            
+          },
+          "Build": {
+            sh 'printenv'
+            
+          },
+          "Unitest": {
+            sh 'echo \'unitest\''
             
           }
-          
-        }
-        
+        )
       }
     }
-    stage('111') {
+    stage('Docker') {
       steps {
-        sh 'echo 123'
+        build(quietPeriod: 1, job: 'geass')
+      }
+    }
+    stage('Qa') {
+      steps {
+        sh 'echo \'qa\''
+      }
+    }
+    stage('Deploy') {
+      steps {
+        build 'aliyun-slb-automate'
       }
     }
   }
